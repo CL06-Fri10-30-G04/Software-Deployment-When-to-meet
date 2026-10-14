@@ -10,12 +10,17 @@ def client():
         yield client
 
 
-def test_health(client):
+def test_health(client, monkeypatch):
+    class FakeConnection:
+        def close(self):
+            pass
+
+    monkeypatch.setattr("backend.app.get_db_connection", lambda: FakeConnection())
+
     response = client.get("/api/health")
 
     assert response.status_code == 200
     assert response.get_json() == {"status": "ok", "database": "connected"}
-
 
 def test_index(client):
     response = client.get("/")
