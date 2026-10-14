@@ -3,14 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>When to meet</title>
+  <title>When to Meet</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/app.js" defer></script>
 </head>
 <body>
   <main>
-    <h1>When to meet</h1>
-    <p id="status">Loading...</p>
+    <h1>When to Meet</h1>
+    <p id="status" role="status">Loading...</p>
+
+    <section aria-labelledby="create-heading">
+      <h2 id="create-heading">Create a meeting</h2>
+      <form id="meeting-form">
+        <label for="title">Meeting title</label>
+        <input id="title" name="title" required maxlength="200">
+        <label for="description">Description (optional)</label>
+        <textarea id="description" name="description" rows="3"></textarea>
+        <button type="submit">Create meeting</button>
+      </form>
+      <p id="form-message" role="status"></p>
+    </section>
+
+    <section aria-labelledby="meetings-heading">
+      <h2 id="meetings-heading">Meetings</h2>
+      <ul id="meetings-list"></ul>
+    </section>
   </main>
 </body>
 </html>

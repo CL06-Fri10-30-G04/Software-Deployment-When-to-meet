@@ -1,10 +1,15 @@
 body {
-  font-family: Arial, sans-serif;
-  max-width: 900px;
-  margin: 60px auto;
-  padding: 0 24px;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 760px;
+  padding: 2rem 1rem;
+  color: #202124;
+  background: #f7f8fa;
 }
-
-h1 {
-  color: #2457a7;
-}
+main { background: white; padding: 1.5rem; border-radius: 12px; }
+section { margin-top: 2rem; }
+form { display: grid; gap: 0.6rem; max-width: 32rem; }
+input, textarea, button { font: inherit; padding: 0.6rem; }
+button { cursor: pointer; width: fit-content; }
+#meetings-list > li { margin: 1rem 0; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; }
