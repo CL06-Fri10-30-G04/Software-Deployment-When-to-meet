@@ -1,0 +1,231 @@
+name: Staging CI/CD
+
+on:
+  pull_request:
+    branches: ["staging"]
+      
+  push:
+    branches: ["staging"]
+    
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  frontend-tests:
+    name: Frontend tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+  
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tests/requirements-test.txt
+  
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-test.txt
+          python -m playwright install --with-deps chromium
+  
+      - name: Run frontend tests
+        run: |
+          python -m pytest tests/frontend -v
+          
+  backend-tests:
+    name: Backend unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            tests/requirements-test.txt
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install -r tests/requirements-test.txt
+
+      - name: Check Python syntax
+        run: python -m compileall -q backend
+
+      - name: Run backend unit tests
+        run: python -m pytest tests/backend -v
+
+  integration-tests:
+    name: Integration tests
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: test-root-password
+          MYSQL_DATABASE: test_database
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test-password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptest-root-password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_NAME: test_database
+      DB_USER: test
+      DB_PASSWORD: test-password
+      APP_ENV: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            backend/requirements.txt
+            tests/requirements-test.txt
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install -r tests/requirements-test.txt
+
+      - name: Load database schema
+        run: |
+          mysql \
+            -h 127.0.0.1 \
+            -P 3306 \
+            -u root \
+            -ptest-root-password \
+            test_database < database/schema.sql
+  
+      - name: Load dummy data
+        run: |
+          mysql \
+            -h 127.0.0.1 \
+            -P 3306 \
+            -u root \
+            -ptest-root-password \
+            test_database < tests/test_database.sql
+  
+      - name: Run integration tests
+        run: python -m pytest tests/integration -v
+
+  build-staging:
+    name: Build staging 
+    runs-on: ubuntu-latest
+    needs:
+      - frontend-tests
+      - backend-tests
+      - integration-tests
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+
+    permissions:
+      contents: read
+      id-token: write
+
+    environment: staging
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to Azure Containers
+        run: az acr login --name "${{ vars.ACR_NAME }}"
+
+      - name: Build Docker image
+        env:
+          REGISTRY: ${{ vars.ACR_LOGIN_SERVER }}
+          IMAGE_NAME: WhenToMeetButBetter
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t "$REGISTRY/$IMAGE_NAME:$IMAGE_TAG" .
+          docker push "$REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+
+  deploy-staging:
+    name: Deploy to Azure staging
+    runs-on: ubuntu-latest
+    needs: build-staging
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+
+    environment: staging
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy
+        env:
+          REGISTRY: ${{ vars.ACR_LOGIN_SERVER }}
+          IMAGE_NAME: WhenToMeetButBetter
+          IMAGE_TAG: ${{ github.sha }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          WEBAPP_NAME: ${{ vars.AZURE_WEBAPP_NAME }}
+        run: |
+          az webapp config container set \
+            --name "$WEBAPP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --docker-custom-image-name "$REGISTRY/$IMAGE_NAME:$IMAGE_TAG" \
+            --docker-registry-server-url "https://$REGISTRY"
+
+          az webapp restart \
+            --name "$WEBAPP_NAME" \
+            --resource-group "$RESOURCE_GROUP"
+
+      - name: Verify deployment
+        env:
+          HEALTH_URL: ${{ vars.STAGING_HEALTH_URL }}
+        run: |
+          for attempt in $(seq 1 18); do
+            if curl --fail --silent --show-error "$HEALTH_URL"; then
+              echo "Staging health check passed."
+              exit 0
+            fi
+
+            echo "Waiting for staging application..."
+            sleep 10
+          done
+
+          echo "Staging health check failed."
+          exit 1
