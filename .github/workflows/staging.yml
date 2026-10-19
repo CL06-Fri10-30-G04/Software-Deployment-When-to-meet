@@ -198,8 +198,10 @@ jobs:
         with:
           containerAppName: ${{ vars.AZURE_STAGING_CONTAINER_APP_NAME }}
           resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP }}
-          imageToDeploy: ghcr.io/${{ github.repository_owner }}/whentomeetbutbetter:${{ github.sha }}
+          imageToDeploy: ghcr.io/cl06-fri10-30-g04/whentomeetbutbetter:${{ github.sha }}
           registryUrl: ghcr.io
+          registryUsername: ${{ secrets.GHCR_USERNAME }}
+          registryPassword: ${{ secrets.GHCR_TOKEN }}
 
 
       - name: Verify deployment
