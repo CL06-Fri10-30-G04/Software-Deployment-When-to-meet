@@ -194,18 +194,13 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy staging container app
-        env:
-          GH_OWNER: ${{ github.repository_owner }}
-          IMAGE_TAG: ${{ github.sha }}
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          CONTAINER_APP_NAME: ${{ vars.AZURE_STAGING_CONTAINER_APP_NAME }}
-        run: |
-          IMAGE="ghcr.io/$(echo "$GH_OWNER" | tr '[:upper:]' '[:lower:]')/whentomeetbutbetter"
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: ${{ vars.AZURE_STAGING_CONTAINER_APP_NAME }}
+          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP }}
+          imageToDeploy: ghcr.io/${{ github.repository_owner }}/whentomeetbutbetter:${{ github.sha }}
+          registryUrl: ghcr.io
 
-          az containerapp update \
-            --name "$CONTAINER_APP_NAME" \
-            --resource-group "$RESOURCE_GROUP" \
-            --image "$IMAGE:$IMAGE_TAG"
 
       - name: Verify deployment
         env:
