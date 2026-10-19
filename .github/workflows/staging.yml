@@ -171,6 +171,7 @@ jobs:
           TAG: ${{ steps.image.outputs.tag }}
         run: docker push "$IMAGE:$TAG"
 
+
   deploy-staging:
     name: Deploy to Azure staging
     runs-on: ubuntu-latest
@@ -203,18 +204,24 @@ jobs:
           registryUsername: ${{ secrets.GHCR_USERNAME }}
           registryPassword: ${{ secrets.GHCR_TOKEN }}
 
-
       - name: Verify deployment
         env:
           HEALTH_URL: ${{ vars.STAGING_HEALTH_URL }}
         run: |
+          set -e
+
+          if [ -z "$HEALTH_URL" ]; then
+            echo "STAGING_HEALTH_URL is not configured."
+            exit 1
+          fi
+
           for attempt in $(seq 1 18); do
             if curl --fail --silent --show-error "$HEALTH_URL"; then
               echo "Staging health check passed."
               exit 0
             fi
 
-            echo "Waiting for staging application..."
+            echo "Waiting for staging application... ($attempt/18)"
             sleep 10
           done
 
