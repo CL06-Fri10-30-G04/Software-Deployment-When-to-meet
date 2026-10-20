@@ -1,0 +1,30 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      target: final
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      APP_ENV: development
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB_NAME: when_to_meet
+    ports:
+      - "8000:8000"
+
+volumes:
+  mongo-data:

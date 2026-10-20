@@ -68,35 +68,26 @@ jobs:
         run: python -m compileall -q backend
 
       - name: Run backend unit tests
-        run: python -m pytest tests/backend -v
+        run: python -m pytest tests/backend tests/unit -v
 
   integration-tests:
     name: Integration tests
     runs-on: ubuntu-latest
 
     services:
-      mysql:
-        image: mysql:8.4
-        env:
-          MYSQL_ROOT_PASSWORD: test-root-password
-          MYSQL_DATABASE: test_database
-          MYSQL_USER: test
-          MYSQL_PASSWORD: test-password
+      mongo:
+        image: mongo:7
         ports:
-          - 3306:3306
+          - 27017:27017
         options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptest-root-password"
+          --health-cmd="mongosh --quiet --eval 'db.adminCommand(\"ping\").ok'"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
 
     env:
-      DB_HOST: 127.0.0.1
-      DB_PORT: 3306
-      DB_NAME: test_database
-      DB_USER: test
-      DB_PASSWORD: test-password
       APP_ENV: test
+      MONGO_URI: mongodb://127.0.0.1:27017
 
     steps:
       - name: Checkout repository
@@ -116,24 +107,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
           pip install -r tests/requirements-test.txt
-
-      - name: Load database schema
-        run: |
-          mysql \
-            -h 127.0.0.1 \
-            -P 3306 \
-            -u root \
-            -ptest-root-password \
-            test_database < database/schema.sql
-
-      - name: Load dummy data
-        run: |
-          mysql \
-            -h 127.0.0.1 \
-            -P 3306 \
-            -u root \
-            -ptest-root-password \
-            test_database < tests/test_database.sql
 
       - name: Run integration tests
         run: python -m pytest tests/integration -v

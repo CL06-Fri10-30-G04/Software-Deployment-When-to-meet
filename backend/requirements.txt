@@ -1,2 +1,6 @@
 Flask
 gunicorn
+pymongo
+pydantic
+bcrypt
+tzdata
