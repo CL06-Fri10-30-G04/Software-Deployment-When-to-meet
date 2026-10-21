@@ -40,7 +40,8 @@ The app reads these environment variables:
 | --- | --- |
 | `COSMOS_ENDPOINT` | Cosmos DB account URI |
 | `COSMOS_KEY` | Cosmos DB account key |
-| `COSMOS_DB_NAME` | Database name; created with its containers if missing |
+| `COSMOS_DB_NAME` | Database name; created with its containers if missing. Defaults to `when_to_meet` |
+| `COSMOS_DB_THROUGHPUT` | Shared database throughput in RU/s (default `400`). Containers share this budget |
 | `COSMOS_VERIFY_SSL` | Optional, default `true`. `false` is only accepted for the local emulator |
 | `SESSION_SECRET` | Signs the login cookie. Required: the app will not start without it |
 | `SESSION_COOKIE_SECURE` | Optional. Set to `true` when served over HTTPS |
