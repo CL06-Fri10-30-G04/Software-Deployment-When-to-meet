@@ -64,7 +64,10 @@ def _utc_datetime(value: datetime | str) -> datetime:
 
 
 class StrictModel(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        json_encoders={datetime: lambda value: value.isoformat()},
+    )
 
 
 class Availability(StrictModel):

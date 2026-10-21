@@ -4,4 +4,5 @@ itsdangerous
 pydantic
 bcrypt
 azure-cosmos
+azure-identity
 tzdata
