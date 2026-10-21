@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <script type="module" src="./js/register.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Create account</h1>
+      <form>
+        <div>
+          <label for="register-name">Name</label>
+          <input id="register-name" data-testid="register-name" name="name" type="text" required />
+        </div>
+
+        <div>
+          <label for="register-email">Email</label>
+          <input id="register-email" data-testid="register-email" name="email" type="email" required />
+        </div>
+
+        <div>
+          <label for="register-password">Password</label>
+          <input id="register-password" data-testid="register-password" name="password" type="password" required />
+        </div>
+
+        <div>
+          <label for="register-role">Role</label>
+          <select id="register-role" data-testid="register-role" name="role">
+            <option value="">Select a role</option>
+            <option value="Admin">Admin</option>
+            <option value="Manager">Manager</option>
+            <option value="Senior Staff">Senior Staff</option>
+            <option value="Staff">Staff</option>
+            <option value="Junior Staff">Junior Staff</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="register-timezone">Timezone</label>
+          <input id="register-timezone" data-testid="register-timezone" name="timezone" type="text" required />
+        </div>
+
+        <button data-testid="register-submit" type="submit">Create account</button>
+        <p role="alert" data-testid="form-error" hidden></p>
+      </form>
+
+      <p>
+        <a href="./login.html">Back to log in</a>
+      </p>
+    </main>
+  </body>
+</html>
