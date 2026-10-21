@@ -3,8 +3,12 @@ from datetime import date, datetime, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
-from azure.cosmos.database import DatabaseProxy
 from pydantic import ValidationError as PydanticValidationError
+
+try:
+    from azure.cosmos.database import DatabaseProxy
+except ImportError:  # pragma: no cover - optional runtime dependency
+    DatabaseProxy = Any  # type: ignore[misc,assignment]
 
 from ..exceptions import (
     NotFound,

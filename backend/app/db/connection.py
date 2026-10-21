@@ -1,7 +1,10 @@
 import os
 from urllib.parse import urlparse
 
-from azure.cosmos import CosmosClient
+try:
+    from azure.cosmos import CosmosClient
+except ImportError:  # pragma: no cover - optional runtime dependency
+    CosmosClient = None  # type: ignore[assignment]
 
 _LOCAL_EMULATOR_HOSTS = {"localhost", "127.0.0.1", "::1", "cosmos-emulator"}
 
@@ -18,8 +21,11 @@ def _environment_bool(name: str, default: bool) -> bool:
     raise RuntimeError(f"{name} must be set to true or false")
 
 
-def create_client() -> CosmosClient:
+def create_client():
     """Create a Cosmos client from the configured endpoint and account key."""
+    if CosmosClient is None:
+        raise RuntimeError("azure-cosmos is required. Install it with 'pip install azure-cosmos'.")
+
     endpoint = os.getenv("COSMOS_ENDPOINT")
     key = os.getenv("COSMOS_KEY")
     if not endpoint:

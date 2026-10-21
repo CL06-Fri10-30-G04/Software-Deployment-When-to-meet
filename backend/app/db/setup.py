@@ -1,11 +1,19 @@
 import os
+from typing import Any
 
-from azure.cosmos import CosmosClient, PartitionKey
-from azure.cosmos.database import DatabaseProxy
+try:
+    from azure.cosmos import PartitionKey
+    from azure.cosmos.database import DatabaseProxy
+except ImportError:  # pragma: no cover - optional runtime dependency
+    PartitionKey = None
+    DatabaseProxy = Any  # type: ignore[misc,assignment]
 
 
-def ensure_database(client: CosmosClient) -> DatabaseProxy:
+def ensure_database(client: Any) -> Any:
     """Create the configured database and containers if they do not exist."""
+    if PartitionKey is None:
+        raise RuntimeError("azure-cosmos is required. Install it with 'pip install azure-cosmos'.")
+
     database_name = os.getenv("COSMOS_DB_NAME")
     if not database_name:
         raise RuntimeError("COSMOS_DB_NAME must be configured")

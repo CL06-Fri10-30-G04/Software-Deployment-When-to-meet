@@ -1,5 +1,15 @@
 import { ApiError, request } from './api.js';
 
+function showPageAlert(message) {
+  const alert = document.querySelector('[role="alert"]');
+  if (!alert) {
+    return;
+  }
+
+  alert.hidden = false;
+  alert.textContent = message;
+}
+
 export function buildAuthenticatedNav() {
   let nav = document.querySelector('#app-nav');
   if (!nav) {
@@ -49,8 +59,12 @@ export async function requireSessionUser() {
   try {
     return await request('GET', '/api/auth/me');
   } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
-      window.location.assign('login.html');
+    if (error instanceof ApiError) {
+      if (error.status === 401) {
+        window.location.assign('login.html');
+      } else {
+        showPageAlert(error.message || 'Unable to load the current session.');
+      }
     }
 
     throw error;

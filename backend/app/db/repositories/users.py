@@ -5,9 +5,14 @@ from uuid import UUID, uuid4
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import bcrypt
-from azure.cosmos.database import DatabaseProxy
-from azure.cosmos.exceptions import CosmosHttpResponseError
 from pydantic import ValidationError as PydanticValidationError
+
+try:
+    from azure.cosmos.database import DatabaseProxy
+    from azure.cosmos.exceptions import CosmosHttpResponseError
+except ImportError:  # pragma: no cover - optional runtime dependency
+    DatabaseProxy = Any  # type: ignore[misc,assignment]
+    CosmosHttpResponseError = RuntimeError
 
 from ..exceptions import DuplicateEmailError, NotFound, ValidationError
 from ..models import (

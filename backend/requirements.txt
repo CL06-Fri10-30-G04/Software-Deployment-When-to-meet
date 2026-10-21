@@ -1,6 +1,8 @@
-Flask
-gunicorn
+fastapi
+uvicorn
+itsdangerous
 pymongo
 pydantic
 bcrypt
+azure-cosmos
 tzdata

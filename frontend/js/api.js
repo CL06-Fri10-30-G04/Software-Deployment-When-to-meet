@@ -44,10 +44,6 @@ export async function request(method, path, body) {
     const errorCode = payload && typeof payload === 'object' && payload.error ? payload.error : 'request_failed';
     const errorMessage = payload && typeof payload === 'object' && payload.message ? payload.message : response.statusText || 'Request failed';
 
-    if (response.status === 401) {
-      window.location.assign('login.html');
-    }
-
     throw new ApiError(response.status, errorCode, errorMessage);
   }
 

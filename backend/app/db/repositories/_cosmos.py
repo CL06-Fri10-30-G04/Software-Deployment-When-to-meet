@@ -3,9 +3,14 @@ from copy import deepcopy
 from collections.abc import Callable, Sequence
 from typing import Any
 
-from azure.core import MatchConditions
-from azure.cosmos.container import ContainerProxy
-from azure.cosmos.exceptions import CosmosHttpResponseError
+try:
+    from azure.core import MatchConditions
+    from azure.cosmos.container import ContainerProxy
+    from azure.cosmos.exceptions import CosmosHttpResponseError
+except ImportError:  # pragma: no cover - optional runtime dependency
+    MatchConditions = None
+    ContainerProxy = Any  # type: ignore[misc,assignment]
+    CosmosHttpResponseError = RuntimeError
 
 from ..exceptions import ConcurrencyError, NotFound
 
@@ -52,6 +57,9 @@ def query_items(
 def read_item(
     container: ContainerProxy, item_id: str, partition_key: str
 ) -> dict[str, Any]:
+    if MatchConditions is None:
+        raise RuntimeError("azure-cosmos is required. Install it with 'pip install azure-cosmos'.")
+
     try:
         return container.read_item(item=item_id, partition_key=partition_key)
     except CosmosHttpResponseError as error:
@@ -66,6 +74,9 @@ def replace_with_etag_retry(
     partition_key: str,
     update: Callable[[dict[str, Any]], dict[str, Any]],
 ) -> dict[str, Any]:
+    if MatchConditions is None:
+        raise RuntimeError("azure-cosmos is required. Install it with 'pip install azure-cosmos'.")
+
     retries = 0
     while True:
         current = read_item(container, item_id, partition_key)

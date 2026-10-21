@@ -23,6 +23,7 @@ services:
       APP_ENV: development
       MONGO_URI: mongodb://mongo:27017
       MONGO_DB_NAME: when_to_meet
+      SESSION_SECRET: dev-only-session-secret
     ports:
       - "8000:8000"
 
