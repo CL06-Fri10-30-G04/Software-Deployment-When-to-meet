@@ -1,32 +1,28 @@
 import pytest
+from fastapi.testclient import TestClient
 
-from backend.app import app
+from backend.app.main import create_app
 
 
 @pytest.fixture
 def client():
-    app.config["TESTING"] = True
-    with app.test_client() as client:
+    app = create_app(session_secret="test-session-secret")
+    with TestClient(app) as client:
         yield client
 
 
-def test_health(client, monkeypatch):
-    class FakeConnection:
-        def close(self):
-            pass
-
-    monkeypatch.setattr("backend.app.get_db_connection", lambda: FakeConnection())
-
+def test_health(client):
     response = client.get("/api/health")
 
     assert response.status_code == 200
-    assert response.get_json() == {"status": "ok", "database": "connected"}
+    assert response.json() == {"status": "ok"}
+
 
 def test_index(client):
     response = client.get("/")
 
     assert response.status_code == 200
-    assert response.content_type.startswith("text/html")
+    assert response.headers["content-type"].startswith("text/html")
 
 
 def test_missing_frontend_file(client):

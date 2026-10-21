@@ -49,6 +49,26 @@ The app reads these environment variables:
 set them on the Container App and store `COSMOS_KEY` and `SESSION_SECRET` as
 secrets; do not commit real credentials.
 
+### Running the test suite
+
+Run all backend, unit, integration, and frontend tests against the containerized
+Cosmos DB emulator, app, and test runner with:
+
+```sh
+docker compose -f compose.test.yml up --build --abort-on-container-exit --exit-code-from tests
+```
+
+The stack starts the Cosmos DB emulator, waits for it to become healthy, builds
+and starts the app, then runs `pytest tests/backend tests/unit tests/integration
+tests/frontend -v` inside the tests container. The command exits with the test
+runner's exit code (0 on success). Clean up afterwards with:
+
+```sh
+docker compose -f compose.test.yml down -v
+```
+
+The test stack is defined in `docker-compose.test.yml`.
+
 ### Building and publishing
 
 Build the application image with `docker build -t myapp .`. If your cloud uses
