@@ -1,31 +1,32 @@
 services:
-  mongo:
-    image: mongo:7
+  # Local stand-in for Azure Cosmos DB (NoSQL API). The service name must stay
+  # "cosmos-emulator": the app only allows COSMOS_VERIFY_SSL=false for that host.
+  cosmos-emulator:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
     restart: unless-stopped
+    environment:
+      ENABLE_TELEMETRY: "false"
     ports:
-      - "27017:27017"
+      - "8081:8081" # Cosmos API
+      - "1234:1234" # Data Explorer: http://localhost:1234
     volumes:
-      - mongo-data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - cosmos-data:/data
 
   app:
     build:
       context: .
       target: final
     depends_on:
-      mongo:
-        condition: service_healthy
+      - cosmos-emulator
     environment:
-      APP_ENV: development
-      MONGO_URI: mongodb://mongo:27017
-      MONGO_DB_NAME: when_to_meet
+      COSMOS_ENDPOINT: http://cosmos-emulator:8081
+      # Microsoft's published emulator key, the same for everyone. Not a secret.
+      COSMOS_KEY: C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==
+      COSMOS_DB_NAME: when_to_meet
+      COSMOS_VERIFY_SSL: "false"
       SESSION_SECRET: dev-only-session-secret
     ports:
       - "8000:8000"
 
 volumes:
-  mongo-data:
+  cosmos-data:
