@@ -4,59 +4,62 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Meeting</title>
+    <link rel="stylesheet" href="./css/style.css" />
     <script type="module" src="./js/meeting-new.js"></script>
   </head>
   <body>
     <main>
-      <p><a href="meetings.html">Back to meetings</a></p>
-      <h1>New meeting</h1>
+      <section class="card meeting-form-card">
+        <p><a href="meetings.html">Back to meetings</a></p>
+        <h1>New meeting</h1>
 
-      <form id="meeting-form">
-        <div>
-          <label for="meeting-name">Meeting name</label>
-          <input id="meeting-name" data-testid="meeting-name" name="name" type="text" required />
-        </div>
+        <form id="meeting-form">
+          <div>
+            <label for="meeting-name">Meeting name</label>
+            <input id="meeting-name" data-testid="meeting-name" name="name" type="text" required />
+          </div>
 
-        <div>
-          <label for="meeting-duration">Duration (minutes)</label>
-          <input id="meeting-duration" data-testid="meeting-duration" name="duration" type="number" min="1" required />
-        </div>
+          <div>
+            <label for="meeting-duration">Duration (minutes)</label>
+            <input id="meeting-duration" data-testid="meeting-duration" name="duration" type="number" min="1" required />
+          </div>
 
-        <div>
-          <label for="meeting-earliest">Earliest date</label>
-          <input id="meeting-earliest" data-testid="meeting-earliest" name="earliestDate" type="date" required />
-        </div>
+          <div>
+            <label for="meeting-earliest">Earliest date</label>
+            <input id="meeting-earliest" data-testid="meeting-earliest" name="earliestDate" type="date" required />
+          </div>
 
-        <div>
-          <label for="meeting-latest">Latest date</label>
-          <input id="meeting-latest" data-testid="meeting-latest" name="latestDate" type="date" required />
-        </div>
+          <div>
+            <label for="meeting-latest">Latest date</label>
+            <input id="meeting-latest" data-testid="meeting-latest" name="latestDate" type="date" required />
+          </div>
 
-        <fieldset>
-          <legend>Invite users</legend>
-          <div id="invite-users-list"></div>
-        </fieldset>
+          <fieldset>
+            <legend>Invite users</legend>
+            <div id="invite-users-list"></div>
+          </fieldset>
 
-        <fieldset>
-          <legend>Invite roles</legend>
-          <div id="include-role-list"></div>
-        </fieldset>
+          <fieldset>
+            <legend>Invite roles</legend>
+            <div id="include-role-list"></div>
+          </fieldset>
 
-        <fieldset>
-          <legend>Exclude roles</legend>
-          <div id="exclude-role-list"></div>
-        </fieldset>
+          <fieldset>
+            <legend>Exclude roles</legend>
+            <div id="exclude-role-list"></div>
+          </fieldset>
 
-        <fieldset>
-          <legend>Exclude users</legend>
-          <div id="exclude-users-list"></div>
-        </fieldset>
+          <fieldset>
+            <legend>Exclude users</legend>
+            <div id="exclude-users-list"></div>
+          </fieldset>
 
-        <p>Role selection only speeds up inviting, and the custom list is never restricted by it.</p>
+          <p>Role selection only speeds up inviting, and the custom list is never restricted by it.</p>
 
-        <button type="submit" data-testid="meeting-create">Create meeting</button>
-        <p role="alert" data-testid="form-error" hidden></p>
-      </form>
+          <button type="submit" data-testid="meeting-create">Create meeting</button>
+          <p role="alert" data-testid="form-error" hidden></p>
+        </form>
+      </section>
     </main>
   </body>
 </html>

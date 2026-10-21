@@ -4,29 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Log in</title>
+    <link rel="stylesheet" href="./css/style.css" />
     <script type="module" src="./js/login.js"></script>
   </head>
   <body>
-    <main>
-      <h1>Log in</h1>
-      <form>
-        <div>
-          <label for="login-email">Email</label>
-          <input id="login-email" data-testid="login-email" name="email" type="email" required />
-        </div>
+    <main class="auth-page">
+      <section class="card">
+        <h1>Log in</h1>
+        <form>
+          <div>
+            <label for="login-email">Email</label>
+            <input id="login-email" data-testid="login-email" name="email" type="email" required />
+          </div>
 
-        <div>
-          <label for="login-password">Password</label>
-          <input id="login-password" data-testid="login-password" name="password" type="password" required />
-        </div>
+          <div>
+            <label for="login-password">Password</label>
+            <input id="login-password" data-testid="login-password" name="password" type="password" required />
+          </div>
 
-        <button data-testid="login-submit" type="submit">Log in</button>
-        <p role="alert" data-testid="form-error" hidden></p>
-      </form>
+          <button data-testid="login-submit" type="submit">Log in</button>
+          <p role="alert" data-testid="form-error" hidden></p>
+        </form>
 
-      <p>
-        <a href="./register.html">Create an account</a>
-      </p>
+        <p>
+          <a href="./register.html">Create an account</a>
+        </p>
+      </section>
     </main>
   </body>
 </html>

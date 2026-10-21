@@ -4,75 +4,77 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Availability</title>
+    <link rel="stylesheet" href="./css/style.css" />
     <script type="module" src="./js/availability.js"></script>
   </head>
   <body>
     <main>
       <h1>Availability</h1>
 
-      <section>
-        <h2>Weekly availability</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Day</th>
-              <th>Available</th>
-              <th>Start</th>
-              <th>End</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Sunday</td>
-              <td><input type="checkbox" data-testid="avail-day-0-enabled" /></td>
-              <td><input type="time" data-testid="avail-day-0-start" /></td>
-              <td><input type="time" data-testid="avail-day-0-end" /></td>
-            </tr>
-            <tr>
-              <td>Monday</td>
-              <td><input type="checkbox" data-testid="avail-day-1-enabled" /></td>
-              <td><input type="time" data-testid="avail-day-1-start" /></td>
-              <td><input type="time" data-testid="avail-day-1-end" /></td>
-            </tr>
-            <tr>
-              <td>Tuesday</td>
-              <td><input type="checkbox" data-testid="avail-day-2-enabled" /></td>
-              <td><input type="time" data-testid="avail-day-2-start" /></td>
-              <td><input type="time" data-testid="avail-day-2-end" /></td>
-            </tr>
-            <tr>
-              <td>Wednesday</td>
-              <td><input type="checkbox" data-testid="avail-day-3-enabled" /></td>
-              <td><input type="time" data-testid="avail-day-3-start" /></td>
-              <td><input type="time" data-testid="avail-day-3-end" /></td>
-            </tr>
-            <tr>
-              <td>Thursday</td>
-              <td><input type="checkbox" data-testid="avail-day-4-enabled" /></td>
-              <td><input type="time" data-testid="avail-day-4-start" /></td>
-              <td><input type="time" data-testid="avail-day-4-end" /></td>
-            </tr>
-            <tr>
-              <td>Friday</td>
-              <td><input type="checkbox" data-testid="avail-day-5-enabled" /></td>
-              <td><input type="time" data-testid="avail-day-5-start" /></td>
-              <td><input type="time" data-testid="avail-day-5-end" /></td>
-            </tr>
-            <tr>
-              <td>Saturday</td>
-              <td><input type="checkbox" data-testid="avail-day-6-enabled" /></td>
-              <td><input type="time" data-testid="avail-day-6-start" /></td>
-              <td><input type="time" data-testid="avail-day-6-end" /></td>
-            </tr>
-          </tbody>
-        </table>
-        <button type="button" data-testid="avail-save">Save</button>
-        <p aria-live="polite" data-testid="avail-status"></p>
-      </section>
+      <div class="availability-grid">
+        <section class="card availability-weekly">
+          <h2>Weekly availability</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Available</th>
+                <th>Start</th>
+                <th>End</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sunday</td>
+                <td><input type="checkbox" data-testid="avail-day-0-enabled" /></td>
+                <td><input type="time" data-testid="avail-day-0-start" /></td>
+                <td><input type="time" data-testid="avail-day-0-end" /></td>
+              </tr>
+              <tr>
+                <td>Monday</td>
+                <td><input type="checkbox" data-testid="avail-day-1-enabled" /></td>
+                <td><input type="time" data-testid="avail-day-1-start" /></td>
+                <td><input type="time" data-testid="avail-day-1-end" /></td>
+              </tr>
+              <tr>
+                <td>Tuesday</td>
+                <td><input type="checkbox" data-testid="avail-day-2-enabled" /></td>
+                <td><input type="time" data-testid="avail-day-2-start" /></td>
+                <td><input type="time" data-testid="avail-day-2-end" /></td>
+              </tr>
+              <tr>
+                <td>Wednesday</td>
+                <td><input type="checkbox" data-testid="avail-day-3-enabled" /></td>
+                <td><input type="time" data-testid="avail-day-3-start" /></td>
+                <td><input type="time" data-testid="avail-day-3-end" /></td>
+              </tr>
+              <tr>
+                <td>Thursday</td>
+                <td><input type="checkbox" data-testid="avail-day-4-enabled" /></td>
+                <td><input type="time" data-testid="avail-day-4-start" /></td>
+                <td><input type="time" data-testid="avail-day-4-end" /></td>
+              </tr>
+              <tr>
+                <td>Friday</td>
+                <td><input type="checkbox" data-testid="avail-day-5-enabled" /></td>
+                <td><input type="time" data-testid="avail-day-5-start" /></td>
+                <td><input type="time" data-testid="avail-day-5-end" /></td>
+              </tr>
+              <tr>
+                <td>Saturday</td>
+                <td><input type="checkbox" data-testid="avail-day-6-enabled" /></td>
+                <td><input type="time" data-testid="avail-day-6-start" /></td>
+                <td><input type="time" data-testid="avail-day-6-end" /></td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" data-testid="avail-save">Save</button>
+          <p aria-live="polite" data-testid="avail-status"></p>
+        </section>
 
-      <section>
-        <h2>Add unavailability</h2>
-        <form id="unavailability-form">
+        <section class="card availability-add">
+          <h2>Add unavailability</h2>
+          <form id="unavailability-form">
           <div>
             <label for="unavail-label">Label</label>
             <input id="unavail-label" data-testid="unavail-label" name="label" type="text" required />
@@ -128,10 +130,11 @@
 
           <button type="submit" data-testid="unavail-add">Add unavailability</button>
           <p role="alert" data-testid="form-error" hidden></p>
-        </form>
-      </section>
+          </form>
+        </section>
+      </div>
 
-      <section>
+      <section class="card availability-existing">
         <h2>Existing unavailability</h2>
         <ul data-testid="unavail-list"></ul>
       </section>
