@@ -17,7 +17,8 @@ def test_frontend_loads_and_displays_title():
                 **kwargs,
             )
 
-    server = TCPServer(("127.0.0.1", 8000), Handler)
+    TCPServer.allow_reuse_address = True
+    server = TCPServer(("127.0.0.1", 8010), Handler)
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
 
@@ -25,9 +26,10 @@ def test_frontend_loads_and_displays_title():
         with sync_playwright() as p:
             browser = p.chromium.launch()
             page = browser.new_page()
-            page.goto("http://127.0.0.1:8000")
+            page.goto("http://127.0.0.1:8010")
+            page.wait_for_url("**/login.html")
 
-            assert page.title() == "My Application"
+            assert page.title() == "Log in"
 
             browser.close()
     finally:
