@@ -113,7 +113,7 @@ th {
 
 #app-nav {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(var(--nav-links, 3), minmax(0, 1fr)) auto;
   align-items: stretch;
   gap: 0.5rem;
   width: min(1100px, calc(100% - 2rem));
@@ -307,9 +307,306 @@ main {
   color: #a11f1f;
 }
 
+/* Monitoring page. Chart colours are the validated categorical slots 1-3. */
+.monitoring {
+  display: grid;
+  /* minmax(0, ...) stops wide tables stretching the page past the screen. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --chart-grid: #e1e0d9;
+  --chart-axis: #c3c2b7;
+  --chart-muted: #6b6a65;
+}
+
+.monitoring-intro {
+  margin-bottom: 0;
+  color: #52514e;
+}
+
+.monitoring-section h3 {
+  margin: 1.5rem 0 0.5rem;
+  color: #1e3b65;
+  font-size: 1rem;
+}
+
+.monitoring-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.monitoring-section-head h2 {
+  margin: 0;
+}
+
+.monitoring-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.monitoring-controls label {
+  margin: 0;
+}
+
+.monitoring-controls select {
+  width: auto;
+}
+
+.monitoring-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 400;
+}
+
+.monitoring-updated {
+  color: var(--chart-muted);
+  font-size: 0.875rem;
+}
+
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.stat-tile {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  background: #fbfcfe;
+}
+
+.stat-label {
+  color: #52514e;
+  font-size: 0.875rem;
+}
+
+.stat-value {
+  margin: 0.25rem 0;
+  color: #0b0b0b;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.stat-detail {
+  color: var(--chart-muted);
+  font-size: 0.8rem;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+  transition: opacity 0.2s;
+}
+
+.is-loading {
+  opacity: 0.6;
+}
+
+.chart {
+  min-width: 0;
+  padding: 0.75rem 1rem 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.chart h3,
+.monitoring-section .chart h3 {
+  margin: 0 0 0.35rem;
+  color: #0b0b0b;
+  font-size: 0.95rem;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0 0 0.25rem;
+  padding: 0;
+  color: #52514e;
+  font-size: 0.8rem;
+  list-style: none;
+}
+
+.chart-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.chart-key {
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.chart-plot {
+  position: relative;
+}
+
+.chart-plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.chart line.chart-gridline {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+}
+
+.chart line.chart-baseline {
+  stroke: var(--chart-axis);
+  stroke-width: 1;
+}
+
+.chart-tick {
+  fill: var(--chart-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart-area {
+  opacity: 0.1;
+  stroke: none;
+}
+
+.chart-dot {
+  stroke: white;
+  stroke-width: 2;
+}
+
+.chart-crosshair {
+  stroke: var(--chart-axis);
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.chart-hit {
+  fill: transparent;
+  cursor: crosshair;
+  outline: none;
+}
+
+.chart-hit:focus-visible {
+  stroke: var(--blue);
+  stroke-width: 1;
+}
+
+.chart-tooltip {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  min-width: 140px;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid rgba(11, 11, 11, 0.1);
+  background: white;
+  box-shadow: 0 2px 8px rgba(11, 11, 11, 0.12);
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+.chart-tooltip-time {
+  margin-bottom: 0.25rem;
+  color: var(--chart-muted);
+}
+
+.chart-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.chart-tooltip-row span:last-child {
+  color: #52514e;
+}
+
+.chart-tooltip-key {
+  display: inline-block;
+  width: 10px;
+  height: 2px;
+}
+
+.chart-empty {
+  margin: 1.5rem 0;
+  color: var(--chart-muted);
+}
+
+.chart-table {
+  margin: 0.25rem 0;
+  font-size: 0.8rem;
+}
+
+.chart-table summary {
+  color: var(--blue);
+  cursor: pointer;
+}
+
+.chart-table table {
+  display: block;
+  max-height: 220px;
+  margin-top: 0.4rem;
+  overflow: auto;
+}
+
+.chart-table th,
+.chart-table td,
+.monitoring-table td {
+  padding: 0.35rem 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.monitoring-table {
+  overflow-x: auto;
+}
+
+.monitoring-note {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  background: #f7f9fc;
+}
+
+.monitoring-note p:first-child {
+  margin-top: 0;
+}
+
+.monitoring-errors {
+  margin-bottom: 0.5rem;
+  color: #a11f1f;
+  font-size: 0.875rem;
+}
+
 @media (max-width: 700px) {
   #app-nav {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--nav-links, 3), minmax(0, 1fr));
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   #app-nav button {

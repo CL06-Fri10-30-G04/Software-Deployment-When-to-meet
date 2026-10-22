@@ -45,6 +45,7 @@ The app reads these environment variables:
 | `COSMOS_VERIFY_SSL` | Optional, default `true`. `false` is only accepted for the local emulator |
 | `SESSION_SECRET` | Signs the login cookie. Required: the app will not start without it |
 | `SESSION_COOKIE_SECURE` | Optional. Set to `true` when served over HTTPS |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | Optional. Sends telemetry to Application Insights; see `docs/monitoring.md` |
 
 `docker-compose.dev.yml` sets them for the emulator. For Azure deployments,
 set them on the Container App and store `COSMOS_KEY` and `SESSION_SECRET` as

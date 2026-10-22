@@ -23,19 +23,36 @@ def get_db(request: Request) -> Any:
     return database
 
 
+def resolve_db(request: Request) -> Any:
+    """get_db for code that only needs the database some of the time.
+
+    Honours ``app.dependency_overrides`` the way ``Depends(get_db)`` would.
+    """
+    override = request.app.dependency_overrides.get(get_db)
+    return override() if override else get_db(request)
+
+
 def unauthenticated() -> ApiError:
     return ApiError(401, "unauthenticated", "Authentication required.")
 
 
-def current_user(request: Request, db: Any = Depends(get_db)) -> dict[str, Any]:
+def current_user(request: Request) -> dict[str, Any]:
+    # Checks the session before touching the database, so logged-out requests
+    # get a 401 even when the database is unreachable.
     user_id = request.session.get(SESSION_USER_KEY)
     if not user_id:
         raise unauthenticated()
     try:
-        user = get_user_by_id(db, user_id)
+        user = get_user_by_id(resolve_db(request), user_id)
     except ValidationError:
         user = None
     if user is None:
         request.session.clear()
         raise unauthenticated()
+    return user
+
+
+def require_admin(user: dict[str, Any] = Depends(current_user)) -> dict[str, Any]:
+    if user.get("role") != "Admin":
+        raise ApiError(403, "forbidden", "Only Admin users can view monitoring.")
     return user
