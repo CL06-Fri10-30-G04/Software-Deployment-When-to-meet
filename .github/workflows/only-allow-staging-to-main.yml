@@ -4,7 +4,7 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened, edited]
     branches:
-      - main
+      - master
 
 permissions: {}
 
@@ -22,8 +22,8 @@ jobs:
           TARGET_BRANCH: ${{ github.event.pull_request.base.ref }}
           TARGET_REPO: ${{ github.repository }}
         run: |
-          if [[ "$TARGET_BRANCH" != "main" ]]; then
-            echo "FAIL: Target must be main."
+          if [[ "$TARGET_BRANCH" != "master" ]]; then
+            echo "FAIL: Target must be master."
             exit 1
           fi
 
