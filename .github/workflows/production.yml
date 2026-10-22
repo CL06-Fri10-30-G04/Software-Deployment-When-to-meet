@@ -1,0 +1,73 @@
+
+name: Production Deploy
+
+on:
+  pull_request:
+    types: [closed]
+    branches: ["master"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy-production:
+    name: Deploy to Azure production
+    runs-on: ubuntu-latest
+
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'master' &&
+      github.event.pull_request.head.ref == 'staging' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+
+    environment: production
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy production container
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: ${{ vars.AZURE_PRODUCTION_CONTAINER_APP_NAME }}
+          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP }}
+          imageToDeploy: ghcr.io/cl06-fri10-30-g04/whentomeetbutbetter:${{ github.event.pull_request.head.sha }}
+          registryUrl: ghcr.io
+          registryUsername: ${{ secrets.GHCR_USERNAME }}
+          registryPassword: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Verify production deployment
+        env:
+          HEALTH_URL: ${{ vars.PRODUCTION_HEALTH_URL }}
+        run: |
+          set -e
+
+          if [ -z "$HEALTH_URL" ]; then
+            echo "PRODUCTION_HEALTH_URL is not configured."
+            exit 1
+          fi
+
+          for attempt in $(seq 1 18); do
+            if curl --fail --silent --show-error "$HEALTH_URL"; then
+              echo "Production health check passed."
+              exit 0
+            fi
+
+            echo "Waiting for production application... ($attempt/18)"
+            sleep 10
+          done
+
+          echo "Production health check failed."
+          exit 1
