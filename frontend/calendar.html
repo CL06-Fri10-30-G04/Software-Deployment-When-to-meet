@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <script type="module" src="./js/calendar.js"></script>
+  </head>
+  <body>
+    <main class="calendar-page">
+      <section class="card">
+        <div class="calendar-header">
+          <h1>Calendar</h1>
+          <div class="calendar-view-toggle" role="group" aria-label="Calendar view">
+            <button type="button" data-view="week" data-testid="view-week">Week</button>
+            <button type="button" data-view="month" data-testid="view-month">Month</button>
+          </div>
+        </div>
+
+        <div class="calendar-toolbar">
+          <div class="calendar-nav">
+            <button type="button" class="secondary" data-testid="calendar-prev" aria-label="Previous">‹</button>
+            <button type="button" class="secondary" data-testid="calendar-today">Today</button>
+            <button type="button" class="secondary" data-testid="calendar-next" aria-label="Next">›</button>
+            <h2 class="calendar-title" data-testid="calendar-title" aria-live="polite"></h2>
+          </div>
+
+          <form class="calendar-filters" data-testid="calendar-filters">
+            <div>
+              <label for="filter-show">Show</label>
+              <select id="filter-show" name="show">
+                <option value="all">All my meetings</option>
+                <option value="attending">Attending</option>
+                <option value="invited">Invited, not replied</option>
+                <option value="declined">Declined</option>
+                <option value="created">Created by me</option>
+              </select>
+            </div>
+            <div>
+              <label for="filter-role">Role</label>
+              <select id="filter-role" name="role">
+                <option value="">Any role</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="Senior Staff">Senior Staff</option>
+                <option value="Staff">Staff</option>
+                <option value="Junior Staff">Junior Staff</option>
+              </select>
+            </div>
+            <div data-testid="filter-scope-field" hidden>
+              <label for="filter-scope">Whose meetings</label>
+              <select id="filter-scope" name="scope">
+                <option value="mine">My meetings</option>
+                <option value="everyone">Everyone's meetings</option>
+              </select>
+            </div>
+            <label class="calendar-checkbox">
+              <input type="checkbox" id="filter-cancelled" name="cancelled" />
+              Show cancelled
+            </label>
+          </form>
+        </div>
+
+        <ul class="calendar-legend" aria-label="Key">
+          <li><span class="calendar-key is-scheduled"></span>Scheduled</li>
+          <li><span class="calendar-key is-pending"></span>Scheduled, you haven't replied</li>
+          <li><span class="calendar-key is-planning"></span>Being planned (possible dates)</li>
+          <li><span class="calendar-key is-cancelled"></span>Cancelled</li>
+        </ul>
+
+        <p role="alert" hidden data-testid="calendar-error"></p>
+        <div class="calendar-body" data-testid="calendar-body"></div>
+        <p class="calendar-summary" data-testid="calendar-summary" aria-live="polite"></p>
+      </section>
+    </main>
+  </body>
+</html>

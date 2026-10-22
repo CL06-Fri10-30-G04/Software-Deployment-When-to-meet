@@ -42,9 +42,13 @@ this: logged-out visitors are sent to the login page, other roles get a 403,
 and the page's data endpoints (`/api/monitoring/live`, `/api/monitoring/azure`)
 return 403 for anyone who is not an Admin.
 
-It has two sections:
+It has two sections. **The Azure Monitor section is currently hidden**: its
+HTML has been removed from `frontend/monitoring.html`, so the page shows only
+Container monitoring. The script and the `/api/monitoring/azure` endpoint are
+unchanged; to bring the section back, restore the `azure-section` block in the
+HTML (see the git history for that file).
 
-- **Live: this server.** Measured inside the app process, so it works
+- **Container monitoring.** Measured inside the app process, so it works
   everywhere: locally, in Docker and in Azure, with no setup. A background
   sampler records CPU, memory, disk I/O and network every 5 seconds and keeps
   the last hour; every request's duration is recorded too (health checks and
