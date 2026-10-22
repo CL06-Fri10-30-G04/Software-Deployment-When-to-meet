@@ -55,9 +55,31 @@ export function buildAuthenticatedNav() {
   return nav;
 }
 
+// Links only Admins see. The server checks the role again; this only hides them.
+const ADMIN_LINKS = [{ label: 'Monitoring', href: 'monitoring.html' }];
+
+export function addRoleNavLinks(user) {
+  const nav = document.querySelector('#app-nav');
+  if (!nav || !user || user.role !== 'Admin' || nav.querySelector('[data-admin-link]')) {
+    return;
+  }
+
+  const logoutButton = nav.querySelector('[data-testid="logout"]');
+  for (const link of ADMIN_LINKS) {
+    const anchor = document.createElement('a');
+    anchor.href = link.href;
+    anchor.textContent = link.label;
+    anchor.dataset.adminLink = 'true';
+    nav.insertBefore(anchor, logoutButton);
+  }
+  nav.style.setProperty('--nav-links', String(nav.querySelectorAll('a').length));
+}
+
 export async function requireSessionUser() {
   try {
-    return await request('GET', '/api/auth/me');
+    const user = await request('GET', '/api/auth/me');
+    addRoleNavLinks(user);
+    return user;
   } catch (error) {
     if (error instanceof ApiError) {
       if (error.status === 401) {
