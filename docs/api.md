@@ -1,6 +1,6 @@
 # HTTP API contract
 
-This contract is derived from the calls the frontend makes in `frontend/js/`.
+Thiss contract is derived from the calls the frontend makes in `frontend/js/`.
 All request and response bodies are JSON. Timestamps are ISO-8601 UTC strings,
 dates are `YYYY-MM-DD`, clock times are `HH:MM`.
 
