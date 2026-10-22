@@ -1,8 +1,12 @@
-fastapi
+fastapi>=0.156
 uvicorn
 itsdangerous
 pydantic
 bcrypt
 azure-cosmos
 azure-identity
+azure-monitor-opentelemetry
+azure-monitor-query
+azure-monitor-querymetrics
+psutil
 tzdata

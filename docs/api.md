@@ -134,3 +134,14 @@ returns the meeting to `scheduling`. Removing the creator is a 400.
 (otherwise 400). If any participant is unavailable in that slot it returns
 409 `participants_unavailable` unless `force` is `true`, in which case
 `finalSlot.forced` is `true` and `finalSlot.unavailableUserIds` lists them.
+
+## Monitoring (Admin only)
+
+| Method | Path | Query | Response |
+| ------ | ---- | ----- | -------- |
+| GET | `/api/monitoring/live` | none | 200 `{system, requests}`: this server's CPU, memory, disk I/O and network samples for the last hour, and request latency stats |
+| GET | `/api/monitoring/azure` | `range=1h\|6h\|24h` (default `1h`) | 200 Azure Monitor metrics for the range, or `{configured: false, missing: [...]}` when not set up |
+| GET | `/monitoring.html` | none | The monitoring page. Logged out: 303 to `login.html`. Not Admin: 403 page |
+
+Both API endpoints return 401 `unauthenticated` when logged out and
+403 `forbidden` for users whose role is not `Admin`. See `docs/monitoring.md`.
