@@ -1,10 +1,339 @@
-body {
+:root {
   font-family: Arial, sans-serif;
-  max-width: 900px;
-  margin: 60px auto;
-  padding: 0 24px;
+  color: #202b3c;
+  background: #f3f6fa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --border: #cbd5e1;
+  --blue: #2457a7;
+  --blue-dark: #1c4485;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+h1,
+h2 {
+  color: #1e3b65;
 }
 
 h1 {
-  color: #2457a7;
+  margin-top: 0;
+}
+
+a {
+  color: var(--blue);
+}
+
+a:hover {
+  color: var(--blue-dark);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--blue);
+  background: var(--blue);
+  color: white;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--blue-dark);
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #aebccc;
+  background: white;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--blue);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+form > div {
+  margin-bottom: 1rem;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem 1rem;
+  border: 1px solid var(--border);
+}
+
+legend {
+  padding: 0 0.35rem;
+  color: #344860;
+  font-weight: 700;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+th {
+  background: #eaf0f7;
+}
+
+#app-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: min(1100px, calc(100% - 2rem));
+  margin: 1rem auto 0;
+  border: 1px solid var(--border);
+  background: white;
+}
+
+#app-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+#app-nav a:hover {
+  background: #edf3fb;
+}
+
+#app-nav button {
+  align-self: center;
+  margin: 0.35rem;
+}
+
+main {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 2rem auto;
+}
+
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: min(440px, calc(100% - 2rem));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.card {
+  border: 1px solid var(--border);
+  background: white;
+  padding: 1.5rem;
+}
+
+.auth-page .card {
+  width: 100%;
+}
+
+.auth-page form > div {
+  margin-bottom: 1rem;
+}
+
+.auth-page form button {
+  width: 100%;
+}
+
+.auth-page .card > p {
+  text-align: center;
+}
+
+.meetings-card {
+  width: min(100%, 1000px);
+  margin: 0 auto;
+}
+
+#meetings-container {
+  overflow-x: auto;
+  text-align: left;
+}
+
+.meeting-form-card {
+  width: min(100%, 900px);
+  margin: 0 auto;
+}
+
+#meeting-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+#meeting-form fieldset,
+#meeting-form > p,
+#meeting-form > button,
+#meeting-form > [role="alert"] {
+  grid-column: 1 / -1;
+}
+
+#meeting-form fieldset > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.5rem 1rem;
+}
+
+#meeting-form fieldset label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-weight: 400;
+}
+
+#meeting-form fieldset input {
+  flex: 0 0 auto;
+}
+
+#meeting-form > button {
+  justify-self: end;
+  min-width: 160px;
+}
+
+.availability-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.availability-grid > .card {
+  min-width: 0;
+}
+
+.availability-weekly {
+  overflow-x: auto;
+}
+
+.availability-weekly table {
+  min-width: 470px;
+}
+
+.availability-weekly td input[type="time"] {
+  min-width: 110px;
+}
+
+.availability-add fieldset label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 1rem 0.4rem 0;
+  font-weight: 400;
+}
+
+.availability-add fieldset input {
+  width: auto;
+}
+
+.availability-existing {
+  margin-top: 1rem;
+}
+
+[data-testid="unavail-list"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-testid="unavail-list"] li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e4eaf1;
+}
+
+[data-testid="unavail-list"] li:last-child {
+  border-bottom: 0;
+}
+
+[data-testid="unavail-list"] li span:first-child {
+  font-weight: 700;
+}
+
+[data-testid="unavail-list"] li button {
+  margin-left: auto;
+}
+
+.meeting-detail-card {
+  width: min(100%, 1000px);
+  margin: 0 auto;
+}
+
+.meeting-detail-card > section {
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+}
+
+[role="alert"] {
+  color: #a11f1f;
+}
+
+@media (max-width: 700px) {
+  #app-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #app-nav button {
+    grid-column: 1 / -1;
+    width: calc(100% - 0.7rem);
+  }
+
+  .availability-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #meeting-form {
+    grid-template-columns: 1fr;
+  }
+
+  #meeting-form > div {
+    grid-column: 1;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  [data-testid="unavail-list"] li {
+    flex-wrap: wrap;
+  }
 }

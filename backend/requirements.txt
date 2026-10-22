@@ -1,2 +1,8 @@
-Flask
-gunicorn
+fastapi
+uvicorn
+itsdangerous
+pydantic
+bcrypt
+azure-cosmos
+azure-identity
+tzdata

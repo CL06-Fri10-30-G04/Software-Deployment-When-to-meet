@@ -1,5 +1,5 @@
 
-FROM python:3.12-slim
+FROM python:3.12-slim AS final
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -14,4 +14,4 @@ COPY frontend/ ./frontend/
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--chdir", "/app/backend", "app:app"]
+CMD ["uvicorn", "--factory", "app.main:create_app", "--host", "0.0.0.0", "--port", "8000", "--app-dir", "/app/backend"]

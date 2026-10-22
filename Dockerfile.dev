@@ -1,0 +1,24 @@
+
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+WORKDIR /app
+
+COPY backend/requirements.txt ./backend/requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt
+
+COPY tests/requirements-test.txt ./tests/requirements-test.txt
+RUN pip install --no-cache-dir -r tests/requirements-test.txt
+RUN python -m playwright install --with-deps chromium
+
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+COPY tests/ ./tests/
+COPY database/ ./database/
+
+EXPOSE 8000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--chdir", "/app/backend", "app:app"]

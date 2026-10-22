@@ -68,35 +68,24 @@ jobs:
         run: python -m compileall -q backend
 
       - name: Run backend unit tests
-        run: python -m pytest tests/backend -v
+        run: python -m pytest tests/backend tests/unit -v
 
   integration-tests:
     name: Integration tests
     runs-on: ubuntu-latest
 
     services:
-      mysql:
-        image: mysql:8.4
-        env:
-          MYSQL_ROOT_PASSWORD: test-root-password
-          MYSQL_DATABASE: test_database
-          MYSQL_USER: test
-          MYSQL_PASSWORD: test-password
+      cosmos-emulator:
+        image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
         ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptest-root-password"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
+          - 8081:8081
+        env:
+          ENABLE_TELEMETRY: "false"
 
     env:
-      DB_HOST: 127.0.0.1
-      DB_PORT: 3306
-      DB_NAME: test_database
-      DB_USER: test
-      DB_PASSWORD: test-password
-      APP_ENV: test
+      COSMOS_ENDPOINT: http://127.0.0.1:8081
+      COSMOS_KEY: C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==
+      COSMOS_VERIFY_SSL: "false"
 
     steps:
       - name: Checkout repository
@@ -117,23 +106,18 @@ jobs:
           pip install -r backend/requirements.txt
           pip install -r tests/requirements-test.txt
 
-      - name: Load database schema
+      - name: Wait for Cosmos DB emulator
         run: |
-          mysql \
-            -h 127.0.0.1 \
-            -P 3306 \
-            -u root \
-            -ptest-root-password \
-            test_database < database/schema.sql
-
-      - name: Load dummy data
-        run: |
-          mysql \
-            -h 127.0.0.1 \
-            -P 3306 \
-            -u root \
-            -ptest-root-password \
-            test_database < tests/test_database.sql
+          for attempt in $(seq 1 60); do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8081/ || true)
+            if [ "$status" != "000" ] && [ "$status" != "503" ]; then
+              echo "Emulator ready (HTTP $status)"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Emulator did not become ready in 2 minutes"
+          exit 1
 
       - name: Run integration tests
         run: python -m pytest tests/integration -v
@@ -186,6 +170,7 @@ jobs:
           TAG: ${{ steps.image.outputs.tag }}
         run: docker push "$IMAGE:$TAG"
 
+
   deploy-staging:
     name: Deploy to Azure staging
     runs-on: ubuntu-latest
@@ -209,30 +194,33 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy staging container app
-        env:
-          GH_OWNER: ${{ github.repository_owner }}
-          IMAGE_TAG: ${{ github.sha }}
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          CONTAINER_APP_NAME: ${{ vars.AZURE_STAGING_CONTAINER_APP_NAME }}
-        run: |
-          IMAGE="ghcr.io/$(echo "$GH_OWNER" | tr '[:upper:]' '[:lower:]')/whentomeetbutbetter"
-
-          az containerapp update \
-            --name "$CONTAINER_APP_NAME" \
-            --resource-group "$RESOURCE_GROUP" \
-            --image "$IMAGE:$IMAGE_TAG"
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: ${{ vars.AZURE_STAGING_CONTAINER_APP_NAME }}
+          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP }}
+          imageToDeploy: ghcr.io/cl06-fri10-30-g04/whentomeetbutbetter:${{ github.sha }}
+          registryUrl: ghcr.io
+          registryUsername: ${{ secrets.GHCR_USERNAME }}
+          registryPassword: ${{ secrets.GHCR_TOKEN }}
 
       - name: Verify deployment
         env:
           HEALTH_URL: ${{ vars.STAGING_HEALTH_URL }}
         run: |
+          set -e
+
+          if [ -z "$HEALTH_URL" ]; then
+            echo "STAGING_HEALTH_URL is not configured."
+            exit 1
+          fi
+
           for attempt in $(seq 1 18); do
             if curl --fail --silent --show-error "$HEALTH_URL"; then
               echo "Staging health check passed."
               exit 0
             fi
 
-            echo "Waiting for staging application..."
+            echo "Waiting for staging application... ($attempt/18)"
             sleep 10
           done
 
