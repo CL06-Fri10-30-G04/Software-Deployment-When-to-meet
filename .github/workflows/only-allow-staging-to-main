@@ -1,0 +1,40 @@
+name: staging-source-policy
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  enforce-staging-source:
+    name: enforce-staging-source
+    runs-on: ubuntu-latest
+    permissions: {}
+
+    steps:
+      - name: Verify source and target branches
+        env:
+          SOURCE_BRANCH: ${{ github.event.pull_request.head.ref }}
+          SOURCE_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          TARGET_BRANCH: ${{ github.event.pull_request.base.ref }}
+          TARGET_REPO: ${{ github.repository }}
+        run: |
+          if [[ "$TARGET_BRANCH" != "main" ]]; then
+            echo "FAIL: Target must be main."
+            exit 1
+          fi
+
+          if [[ "$SOURCE_BRANCH" != "staging" ]]; then
+            echo "FAIL: Only staging may merge into main."
+            exit 1
+          fi
+
+          if [[ "$SOURCE_REPO" != "$TARGET_REPO" ]]; then
+            echo "FAIL: The source branch must be in this repository."
+            exit 1
+          fi
+
+          echo "PASS: staging is the approved source for main."
