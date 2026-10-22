@@ -1,12 +1,5 @@
-from . import auth, availability, meetings, monitoring, users
+from . import auth, availability, meetings, users
 
-ROUTERS = [
-    auth.router,
-    users.router,
-    availability.router,
-    meetings.router,
-    monitoring.router,
-    monitoring.page_router,
-]
+ROUTERS = [auth.router, users.router, availability.router, meetings.router]
 
 __all__ = ["ROUTERS"]
