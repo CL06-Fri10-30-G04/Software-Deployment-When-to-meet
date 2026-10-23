@@ -28,6 +28,7 @@ export function buildAuthenticatedNav() {
   const links = [
     { label: 'Availability', href: 'availability.html' },
     { label: 'Meetings', href: 'meetings.html' },
+    { label: 'Calendar', href: 'calendar.html' },
     { label: 'New meeting', href: 'meeting-new.html' },
   ];
 
@@ -37,6 +38,7 @@ export function buildAuthenticatedNav() {
     anchor.textContent = link.label;
     nav.appendChild(anchor);
   }
+  nav.style.setProperty('--nav-links', String(links.length));
 
   const logoutButton = document.createElement('button');
   logoutButton.type = 'button';

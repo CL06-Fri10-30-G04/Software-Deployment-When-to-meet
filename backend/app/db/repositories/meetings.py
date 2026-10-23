@@ -322,6 +322,16 @@ def list_meetings_for_user(
     return [_meeting_document(domain_document(meeting)) for meeting in meetings]
 
 
+def list_all_meetings(db: DatabaseProxy) -> list[dict[str, Any]]:
+    """Every meeting, for users whose role lets them view and edit any meeting."""
+    meetings = query_items(
+        container_for(db, "meetings"),
+        "SELECT * FROM c WHERE c.type = @type",
+        [{"name": "@type", "value": "meeting"}],
+    )
+    return [_meeting_document(domain_document(meeting)) for meeting in meetings]
+
+
 def update_meeting(
     db: DatabaseProxy, meeting_id: str, acting_user: Any, fields: dict[str, Any]
 ) -> dict[str, Any]:

@@ -12,15 +12,15 @@
       <section class="card">
         <h1>Monitoring</h1>
         <p class="monitoring-intro">
-          CPU, memory, disk I/O, network traffic and HTTP request latency. Live figures come from the
-          server that answered this page; Azure Monitor figures cover every replica.
+          CPU, memory, disk I/O, network traffic and HTTP request latency, measured inside the
+          container that answered this page.
         </p>
         <p role="alert" hidden data-testid="monitoring-error"></p>
       </section>
 
       <section class="card monitoring-section" aria-labelledby="live-heading" data-testid="live-section">
         <div class="monitoring-section-head">
-          <h2 id="live-heading">Live: this server</h2>
+          <h2 id="live-heading">Container monitoring</h2>
           <div class="monitoring-controls">
             <label class="monitoring-toggle">
               <input type="checkbox" id="live-auto-refresh" checked />
@@ -33,22 +33,6 @@
         <div class="chart-grid" id="live-charts"></div>
         <h3>Requests by route, last 15 minutes</h3>
         <div class="monitoring-table" id="live-routes"></div>
-      </section>
-
-      <section class="card monitoring-section" aria-labelledby="azure-heading" data-testid="azure-section">
-        <div class="monitoring-section-head">
-          <h2 id="azure-heading">Azure Monitor: all replicas</h2>
-          <div class="monitoring-controls">
-            <label for="azure-range">Time range</label>
-            <select id="azure-range">
-              <option value="1h">Last hour</option>
-              <option value="6h">Last 6 hours</option>
-              <option value="24h">Last 24 hours</option>
-            </select>
-            <span class="monitoring-updated" id="azure-updated" aria-live="polite"></span>
-          </div>
-        </div>
-        <div id="azure-content"></div>
       </section>
     </main>
   </body>

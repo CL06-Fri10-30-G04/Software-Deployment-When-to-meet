@@ -14,6 +14,8 @@ const liveAutoRefresh = document.querySelector('#live-auto-refresh');
 const azureContent = document.querySelector('#azure-content');
 const azureRange = document.querySelector('#azure-range');
 const azureUpdated = document.querySelector('#azure-updated');
+// The Azure Monitor section is optional: it only loads if its HTML is on the page.
+const azureEnabled = Boolean(azureContent);
 
 let liveTimer = null;
 let azureTimer = null;
@@ -348,7 +350,7 @@ function startLiveTimer() {
 
 function startAzureTimer() {
   clearInterval(azureTimer);
-  azureTimer = setInterval(loadAzure, AZURE_REFRESH_MS);
+  azureTimer = azureEnabled ? setInterval(loadAzure, AZURE_REFRESH_MS) : null;
 }
 
 let resizeFrame = null;
@@ -379,7 +381,9 @@ async function init() {
   }
 
   liveAutoRefresh.addEventListener('change', startLiveTimer);
-  azureRange.addEventListener('change', loadAzure);
+  if (azureEnabled) {
+    azureRange.addEventListener('change', loadAzure);
+  }
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       stopTimers();
@@ -390,7 +394,7 @@ async function init() {
     }
   });
 
-  await Promise.all([loadLive(), loadAzure()]);
+  await Promise.all([loadLive(), azureEnabled ? loadAzure() : null]);
   startLiveTimer();
   startAzureTimer();
 }

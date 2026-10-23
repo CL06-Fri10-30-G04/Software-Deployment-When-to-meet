@@ -1,6 +1,6 @@
 # HTTP API contract
 
-This contract is derived from the calls the frontend makes in `frontend/js/`.
+Thiss contract is derived from the calls the frontend makes in `frontend/js/`.
 All request and response bodies are JSON. Timestamps are ISO-8601 UTC strings,
 dates are `YYYY-MM-DD`, clock times are `HH:MM`.
 
@@ -134,6 +134,45 @@ returns the meeting to `scheduling`. Removing the creator is a 400.
 (otherwise 400). If any participant is unavailable in that slot it returns
 409 `participants_unavailable` unless `force` is `true`, in which case
 `finalSlot.forced` is `true` and `finalSlot.unavailableUserIds` lists them.
+
+## Calendar
+
+| Method | Path | Query | Response |
+| ------ | ---- | ----- | -------- |
+| GET | `/api/calendar` | see below | 200 `{start, end, items: [CalendarItem]}` |
+
+Query parameters:
+
+| Name | Required | Values |
+| ---- | -------- | ------ |
+| `start`, `end` | yes | ISO-8601 timestamps; `end` after `start`, at most 62 days apart |
+| `show` | no | `all` (default), `attending` (you accepted), `invited` (you haven't replied), `declined`, `created` (you created it) |
+| `role` | no | A Role: meetings with at least one participant of that role |
+| `scope` | no | `mine` (default): meetings you're in. `everyone`: all meetings, Admin and Manager only (403 `forbidden` otherwise) |
+| `cancelled` | no | `true` to include cancelled meetings (default `false`) |
+
+A scheduled meeting is included when its `finalSlot` overlaps `[start, end)`.
+A meeting still being planned is included when its `earliestDate`–`latestDate`
+range overlaps the dates of `start`–`end`. Items are sorted by start time
+(planned meetings by `earliestDate`).
+
+**CalendarItem**
+
+```json
+{
+  "id": "uuid", "name": "Planning", "status": "scheduling | scheduled | cancelled",
+  "start": "timestamp | null", "end": "timestamp | null", "forced": false,
+  "earliestDate": "YYYY-MM-DD", "latestDate": "YYYY-MM-DD", "durationMinutes": 60,
+  "creatorId": "uuid", "creatorName": "Alex",
+  "myResponse": "accepted | pending | declined | null",
+  "participantCount": 3, "acceptedCount": 2,
+  "roles": ["Manager", "Staff"]
+}
+```
+
+`start`/`end` are the final slot, or `null` while the meeting is being planned.
+`myResponse` is `null` when you aren't a participant (only possible with
+`scope=everyone`).
 
 ## Monitoring (Admin only)
 
